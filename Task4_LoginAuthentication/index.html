@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CipherGate | OIBSIP – Level 2 Task 4</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #020C0E;
+      --surface: #051419;
+      --card:    #071E24;
+      --teal:    #0D9488;
+      --teal2:   #14B8A6;
+      --cyan:    #00E5FF;
+      --green:   #10B981;
+      --red:     #FF1744;
+      --text:    #E0FDFA;
+      --muted:   #4A7A72;
+      --border:  rgba(13,148,136,0.15);
+      --glow:    0 0 20px rgba(13,148,136,0.15);
+    }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px;
+      background-image: radial-gradient(ellipse at 30% 30%, rgba(13,148,136,0.06) 0%, transparent 55%),
+                        radial-gradient(ellipse at 70% 70%, rgba(0,229,255,0.04) 0%, transparent 55%);
+    }
+    .page { display: none; width: 100%; }
+    .page.active { display: flex; flex-direction: column; align-items: center; }
+
+    .auth-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 32px;
+      width: min(420px,100%);
+      box-shadow: var(--glow);
+    }
+    .badge {
+      font-family: 'Fira Code', monospace;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--teal2);
+      background: rgba(13,148,136,0.08);
+      border: 1px solid rgba(13,148,136,0.2);
+      border-radius: 4px; padding: 4px 12px;
+      display: inline-block; margin-bottom: 22px;
+    }
+    .auth-title {
+      font-family: 'Fira Code', monospace;
+      font-size: 22px; font-weight: 500;
+      color: var(--text); margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+    .auth-title span { color: var(--teal2); }
+    .auth-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-family: 'Fira Code', monospace; display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+    .inp-wrap { position: relative; }
+    .form-input {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px; padding: 12px 42px 12px 14px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px; color: var(--text); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input::placeholder { color: var(--muted); }
+    .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(13,148,136,0.15); }
+    .form-input.err { border-color: var(--red); box-shadow: 0 0 0 2px rgba(255,23,68,0.1); }
+    .tpw { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 15px; color: var(--muted); transition: color 0.15s; }
+    .tpw:hover { color: var(--text); }
+    .ferr { font-size: 11px; color: var(--red); margin-top: 5px; display: none; font-family: 'Fira Code', monospace; }
+    .ferr.show { display: block; }
+
+    .str-wrap { margin-top: 7px; display: none; }
+    .str-wrap.show { display: block; }
+    .str-bar { height: 3px; background: var(--surface); border-radius: 2px; overflow: hidden; margin-bottom: 3px; border: 1px solid var(--border); }
+    .str-fill { height: 3px; border-radius: 2px; transition: width 0.3s, background 0.3s; }
+    .str-txt { font-size: 10px; color: var(--muted); font-family: 'Fira Code', monospace; }
+
+    .sub-btn {
+      width: 100%; background: var(--teal);
+      border: none; border-radius: 8px; padding: 13px;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px; font-weight: 700; color: #fff;
+      cursor: pointer; margin-top: 6px;
+      transition: filter 0.15s, transform 0.1s;
+      box-shadow: 0 0 20px rgba(13,148,136,0.3);
+    }
+    .sub-btn:hover { filter: brightness(1.1); }
+    .sub-btn:active { transform: scale(0.98); }
+
+    .switch { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
+    .switch a { color: var(--teal2); font-weight: 600; cursor: pointer; }
+    .switch a:hover { text-decoration: underline; }
+    .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+    .divider span { font-size: 10px; color: var(--muted); font-family: 'Fira Code', monospace; }
+
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-70px); background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 11px 20px; font-size: 13px; font-weight: 600; color: var(--text); box-shadow: var(--glow); transition: transform 0.3s; z-index: 999; white-space: nowrap; font-family: 'Fira Code', monospace; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.g { border-color: rgba(16,185,129,0.4); color: var(--green); }
+    .toast.r { border-color: rgba(255,23,68,0.3); color: var(--red); }
+
+    /* DASHBOARD */
+    .dash-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 32px;
+      width: min(460px,100%); text-align: center;
+      box-shadow: var(--glow);
+    }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; color: #020C0E;
+      margin: 0 auto 18px;
+      box-shadow: 0 0 24px rgba(13,148,136,0.4);
+    }
+    .d-name { font-family: 'Fira Code', monospace; font-size: 20px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .d-name span { color: var(--teal2); }
+    .d-email { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    .d-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .d-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    .d-stat-val { font-family: 'Fira Code', monospace; font-size: 18px; color: var(--teal2); margin-bottom: 3px; text-shadow: 0 0 8px rgba(13,148,136,0.4); }
+    .d-stat-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Fira Code', monospace; }
+    .d-msg { background: rgba(13,148,136,0.06); border: 1px solid rgba(13,148,136,0.2); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--teal2); margin-bottom: 20px; line-height: 1.5; font-family: 'Fira Code', monospace; }
+    .logout { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 10px 24px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .logout:hover { border-color: var(--red); color: var(--red); }
+
+    .gen-err { font-size: 11px; color: var(--red); text-align: center; margin-bottom: 10px; display: none; background: rgba(255,23,68,0.05); border: 1px solid rgba(255,23,68,0.2); border-radius: 6px; padding: 8px; font-family: 'Fira Code', monospace; }
+    .gen-err.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- REGISTER -->
+<div class="page active" id="regPage">
+  <div class="auth-card">
+    <span class="badge">OIBSIP · Level 2 · Task 4</span>
+    <div class="auth-title">// <span>register</span></div>
+    <div class="auth-sub">Create your CipherGate account to get started.</div>
+    <div class="form-group">
+      <label class="form-label">full_name</label>
+      <div class="inp-wrap"><input class="form-input" id="rN" type="text" placeholder="Enter your name" autocomplete="off"/></div>
+      <div class="ferr" id="rNe">// name required</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">email_address</label>
+      <div class="inp-wrap"><input class="form-input" id="rE" type="email" placeholder="you@email.com" autocomplete="off"/></div>
+      <div class="ferr" id="rEe">// invalid email</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">password</label>
+      <div class="inp-wrap"><input class="form-input" id="rP" type="password" placeholder="Create password"/><button class="tpw" onclick="tpw('rP',this)">👁</button></div>
+      <div class="str-wrap" id="sw"><div class="str-bar"><div class="str-fill" id="sf"></div></div><div class="str-txt" id="st"></div></div>
+      <div class="ferr" id="rPe">// min 6 characters</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">confirm_password</label>
+      <div class="inp-wrap"><input class="form-input" id="rP2" type="password" placeholder="Repeat password"/><button class="tpw" onclick="tpw('rP2',this)">👁</button></div>
+      <div class="ferr" id="rP2e">// passwords don't match</div>
+    </div>
+    <button class="sub-btn" onclick="reg()">Register →</button>
+    <div class="divider"><span>// already registered?</span></div>
+    <div class="switch"><a onclick="go('loginPage')">Sign in →</a></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="loginPage">
+  <div class="auth-card">
+    <span class="badge">OIBSIP · Level 2 · Task 4</span>
+    <div class="auth-title">// <span>login</span></div>
+    <div class="auth-sub">Access your secured CipherGate dashboard.</div>
+    <div class="gen-err" id="ge"></div>
+    <div class="form-group">
+      <label class="form-label">email_address</label>
+      <div class="inp-wrap"><input class="form-input" id="lE" type="email" placeholder="you@email.com"/></div>
+      <div class="ferr" id="lEe">// email required</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">password</label>
+      <div class="inp-wrap"><input class="form-input" id="lP" type="password" placeholder="Your password"/><button class="tpw" onclick="tpw('lP',this)">👁</button></div>
+      <div class="ferr" id="lPe">// password required</div>
+    </div>
+    <button class="sub-btn" onclick="login()">Login →</button>
+    <div class="divider"><span>// no account?</span></div>
+    <div class="switch"><a onclick="go('regPage')">Register →</a></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="dashPage">
+  <div class="dash-card">
+    <div class="avatar" id="av">U</div>
+    <div class="d-name">// <span id="dn">user</span></div>
+    <div class="d-email" id="de">user@email.com</div>
+    <div class="d-grid">
+      <div class="d-stat"><div class="d-stat-val" id="dTime">--:--</div><div class="d-stat-lbl">login_time</div></div>
+      <div class="d-stat"><div class="d-stat-val" id="dDate">---</div><div class="d-stat-lbl">today_date</div></div>
+    </div>
+    <div class="d-msg">// access_granted<br/>🔐 Secured page unlocked. Authentication successful.</div>
+    <button class="logout" onclick="logout()">// logout →</button>
+  </div>
+</div>
+
+<script>
+  const users={};let cur=null;
+  function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');clrErr();}
+  function clrErr(){document.querySelectorAll('.ferr').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.form-input').forEach(i=>i.classList.remove('err'));const ge=document.getElementById('ge');if(ge){ge.classList.remove('show');ge.textContent='';}}
+  function tpw(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
+  function validE(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+  function showE(iId,eId,msg){document.getElementById(iId).classList.add('err');const e=document.getElementById(eId);e.textContent=msg;e.classList.add('show');}
+  function toast(msg,t=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+t+' show';setTimeout(()=>el.classList.remove('show'),2800);}
+
+  document.getElementById('rP').addEventListener('input',function(){
+    const w=document.getElementById('sw'),f=document.getElementById('sf'),t=document.getElementById('st');
+    const v=this.value;if(!v){w.classList.remove('show');return;}w.classList.add('show');
+    let s=0;if(v.length>=6)s++;if(v.length>=10)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+    const l=[{w:'20%',c:'#FF1744',t:'// weak'},{w:'40%',c:'#FFD600',t:'// fair'},{w:'60%',c:'#FFD600',t:'// good'},{w:'80%',c:'#10B981',t:'// strong'},{w:'100%',c:'#0D9488',t:'// very_strong'}];
+    const lvl=l[Math.min(s,4)];f.style.width=lvl.w;f.style.background=lvl.c;t.textContent=lvl.t;t.style.color=lvl.c;
+  });
+
+  function reg(){
+    clrErr();
+    const n=document.getElementById('rN').value.trim();
+    const e=document.getElementById('rE').value.trim();
+    const p=document.getElementById('rP').value;
+    const p2=document.getElementById('rP2').value;
+    let ok=true;
+    if(!n){showE('rN','rNe','// name required');ok=false;}
+    if(!validE(e)){showE('rE','rEe','// invalid email');ok=false;}
+    else if(users[e.toLowerCase()]){showE('rE','rEe','// email already registered');ok=false;}
+    if(p.length<6){showE('rP','rPe','// min 6 characters');ok=false;}
+    if(p!==p2){showE('rP2','rP2e','// passwords don\'t match');ok=false;}
+    if(!ok)return;
+    users[e.toLowerCase()]={name:n,email:e,pw:p};
+    toast('✅ registered! please login.','g');
+    setTimeout(()=>go('loginPage'),1000);
+  }
+
+  function login(){
+    clrErr();
+    const e=document.getElementById('lE').value.trim();
+    const p=document.getElementById('lP').value;
+    let ok=true;
+    if(!e){showE('lE','lEe','// email required');ok=false;}
+    if(!p){showE('lP','lPe','// password required');ok=false;}
+    if(!ok)return;
+    const u=users[e.toLowerCase()];
+    if(!u||u.pw!==p){
+      const ge=document.getElementById('ge');ge.textContent='// error: invalid credentials';ge.classList.add('show');
+      document.getElementById('lE').classList.add('err');document.getElementById('lP').classList.add('err');
+      toast('// login_failed','r');return;
+    }
+    cur=u;
+    const now=new Date();
+    document.getElementById('av').textContent=u.name.charAt(0).toUpperCase();
+    document.getElementById('dn').textContent=u.name.toLowerCase();
+    document.getElementById('de').textContent=u.email;
+    document.getElementById('dTime').textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('dDate').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    toast('// access_granted ✅','g');
+    go('dashPage');
+  }
+
+  function logout(){cur=null;document.getElementById('lE').value='';document.getElementById('lP').value='';toast('// logged_out 👋','');go('loginPage');}
+  document.getElementById('rP2').addEventListener('keydown',e=>{if(e.key==='Enter')reg();});
+  document.getElementById('lP').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+</script>
+</body>
+</html>
