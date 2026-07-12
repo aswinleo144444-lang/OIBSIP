@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Virat Kohli – The Chase Master Tribute</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #080808;
+      --dark:   #0F0F0F;
+      --card:   #161616;
+      --red:    #DC2626;
+      --red2:   #EF4444;
+      --orange: #F97316;
+      --text:   #FAFAFA;
+      --muted:  #6B7280;
+      --border: rgba(255,255,255,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 60px 24px 40px;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* Diagonal red slash */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%; right: -10%;
+      width: 60%; height: 140%;
+      background: linear-gradient(135deg, rgba(220,38,38,0.06) 0%, transparent 60%);
+      transform: skewX(-8deg);
+      pointer-events: none;
+    }
+
+    /* 18 watermark */
+    .hero::after {
+      content: "18";
+      position: absolute;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(260px, 48vw, 600px);
+      font-weight: 800;
+      color: rgba(220,38,38,0.04);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none; line-height: 1;
+    }
+
+    .hero-inner { position: relative; z-index: 2; }
+
+    .hero-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red2);
+      border: 1px solid rgba(239,68,68,0.3);
+      padding: 5px 16px; margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(64px, 14vw, 150px);
+      line-height: 0.88;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+    .hero h1 .first { display: block; color: var(--text); }
+    .hero h1 .last {
+      display: block;
+      color: var(--red);
+      -webkit-text-stroke: 0px;
+    }
+
+    .hero-line {
+      width: 60px; height: 3px;
+      background: var(--red);
+      margin: 20px auto;
+    }
+
+    .hero-sub {
+      font-size: clamp(13px, 2vw, 17px);
+      color: var(--muted); font-style: italic;
+      margin-bottom: 44px; line-height: 1.5;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .hero-stats {
+      display: flex; gap: clamp(24px, 6vw, 56px);
+      justify-content: center; flex-wrap: wrap;
+    }
+    .hstat { text-align: center; }
+    .hstat .val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(40px, 9vw, 72px);
+      font-weight: 800; color: var(--red);
+      line-height: 1; text-transform: uppercase;
+    }
+    .hstat .lbl {
+      font-size: 10px; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .scroll-cue {
+      position: absolute; bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: bob 2s ease-in-out infinite;
+    }
+    .scroll-cue span { font-size: 18px; }
+    @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+    /* ── SECTIONS ── */
+    section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+    .eye {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red2); margin-bottom: 10px;
+    }
+    .sec-h {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; text-transform: uppercase;
+      font-size: clamp(36px, 8vw, 72px);
+      line-height: 0.95; margin-bottom: 36px;
+      letter-spacing: -0.5px;
+    }
+    .rule { max-width: 960px; margin: 0 auto; height: 1px; background: var(--border); }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: start;
+    }
+    @media(max-width:640px){ .about-grid{grid-template-columns:1fr;} }
+
+    .about-text p {
+      font-size: 15px; color: #9CA3AF;
+      line-height: 1.85; margin-bottom: 16px;
+    }
+    .about-text p strong { color: var(--text); }
+
+    .info-list { list-style: none; }
+    .info-list li {
+      display: flex; justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .k { color: var(--muted); }
+    .info-list .v { color: var(--text); font-weight: 500; text-align: right; }
+
+    /* ── TIMELINE ── */
+    .tl { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.45s, transform 0.45s;
+    }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-item.visible { opacity: 1; transform: translateY(0); }
+
+    .tl-yr {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--red); line-height: 1.2;
+      text-align: right;
+    }
+    .tl-hd { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+    .tl-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+    /* ── HONOURS ── */
+    .honours-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+    }
+    .hcard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 20px 14px; text-align: center;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .hcard:hover { border-color: rgba(220,38,38,0.35); transform: translateY(-3px); }
+    .hcard .ico { font-size: 26px; margin-bottom: 10px; }
+    .hcard .nm  { font-size: 12px; font-weight: 500; margin-bottom: 6px; color: var(--muted); }
+    .hcard .cnt {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px; font-weight: 800;
+      color: var(--red); line-height: 1;
+    }
+    .hcard .lb  { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+
+    /* ── QUOTE ── */
+    .quote-zone { max-width: 960px; margin: 0 auto; padding: 60px 24px; }
+    .quote-box {
+      border-left: 4px solid var(--red);
+      padding: clamp(24px, 5vw, 48px) clamp(24px, 5vw, 48px);
+      background: var(--dark);
+    }
+    .q-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-style: italic; font-weight: 700;
+      font-size: clamp(22px, 4vw, 36px);
+      color: var(--text); line-height: 1.3;
+      margin-bottom: 16px; text-transform: uppercase;
+    }
+    .q-attr { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--red2); }
+
+    /* ── RECORDS ── */
+    .rec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .rec {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 18px; display: flex; gap: 14px;
+      transition: border-color 0.2s;
+    }
+    .rec:hover { border-color: rgba(220,38,38,0.3); }
+    .rec-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--red); flex-shrink: 0; line-height: 1;
+    }
+    .rec-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .rec-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    footer {
+      text-align: center; padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--muted);
+    }
+    footer span { color: var(--red2); }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">OIBSIP · Web Dev · Level 2 · Task 2</div>
+    <h1>
+      <span class="first">Virat</span>
+      <span class="last">Kohli</span>
+    </h1>
+    <div class="hero-line"></div>
+    <p class="hero-sub">"The man who turned chasing into an art form."</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="val">80+</div><div class="lbl">International 100s</div></div>
+      <div class="hstat"><div class="val">27K+</div><div class="lbl">Intl. Runs</div></div>
+      <div class="hstat"><div class="val">1</div><div class="lbl">World Cup 2023</div></div>
+      <div class="hstat"><div class="val">7</div><div class="lbl">IPL Titles (RCB)</div></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>↓</span>scroll</div>
+</div>
+
+<!-- ABOUT -->
+<section>
+  <div class="eye">About the King</div>
+  <div class="sec-h">Who is King Kohli?</div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        <strong>Virat Kohli</strong> was born on November 5, 1988, in Delhi, India. Raised in a middle-class family, cricket was never just a sport for him — it was an obsession, a calling, and eventually a legacy.
+      </p>
+      <p>
+        Known as <strong>King Kohli</strong> or <strong>Chase Master</strong>, Virat redefined what it means to bat under pressure. His ability to anchor chases while scoring at a furious pace made him arguably the greatest ODI batsman of all time.
+      </p>
+      <p>
+        Beyond numbers, Kohli's <strong>intensity, fitness culture, and passion</strong> transformed Indian cricket. He brought a new standard of fielding, athleticism, and aggression that inspired an entire generation of cricketers.
+      </p>
+    </div>
+    <ul class="info-list">
+      <li><span class="k">Full Name</span><span class="v">Virat Kohli</span></li>
+      <li><span class="k">Born</span><span class="v">5 Nov 1988, Delhi</span></li>
+      <li><span class="k">Nationality</span><span class="v">Indian</span></li>
+      <li><span class="k">Role</span><span class="v">Top-order Batsman</span></li>
+      <li><span class="k">Batting Style</span><span class="v">Right-handed</span></li>
+      <li><span class="k">Jersey Number</span><span class="v">#18</span></li>
+      <li><span class="k">IPL Team</span><span class="v">Royal Challengers Bengaluru</span></li>
+      <li><span class="k">Nickname</span><span class="v">King / Chase Master</span></li>
+    </ul>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- TIMELINE -->
+<section>
+  <div class="eye">The Rise</div>
+  <div class="sec-h">Career Timeline</div>
+  <div class="tl">
+    <div class="tl-item">
+      <div class="tl-yr">2008</div>
+      <div><div class="tl-hd">U19 World Cup — Captain & Champion</div><div class="tl-desc">Led India to the U19 World Cup title in Malaysia. His aggressive captaincy and match-winning performances announced him to the world.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-yr">2008</div>
+      <div><div class="tl-hd">ODI Debut</div><div class="tl-desc">Made his ODI debut against Sri Lanka at age 19. Scored 12 — but the hunger and drive were unmistakable from the very first ball.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-yr">2011</div>
+      <div><div class="tl-hd">World Cup Winner</div><div class="tl-desc">Part of India's 2011 ODI World Cup winning squad. Scored a crucial 35 in the final and ran between wickets like a man possessed.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-yr">2013</div>
+      <div><div class="tl-hd">Becomes #1 ODI Batsman</div><div class="tl-desc">Reached the top of ICC ODI rankings — a position he would occupy for years. His consistency across all formats was now undeniable.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-yr">2017</div>
+      <div><div class="tl-hd">Full Captain Across All Formats</div><div class="tl-desc">Became India's captain across Tests, ODIs, and T20Is. Under him, India reached the #1 Test ranking and established dominance globally.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-yr">2023</div>
+      <div><div class="tl-hd">ODI World Cup — 50th ODI Hundred</div><div class="tl-desc">Broke Sachin Tendulkar's all-time ODI centuries record with his 50th hundred during the 2023 World Cup on home soil — a moment that made the nation stand still.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-yr">2024</div>
+      <div><div class="tl-hd">T20 World Cup — Mission Complete</div><div class="tl-desc">Played a match-winning knock in the T20 World Cup final against South Africa in Barbados. Announced T20I retirement after helping India win the title.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- HONOURS -->
+<section>
+  <div class="eye">Honours & Awards</div>
+  <div class="sec-h">Trophy Cabinet</div>
+  <div class="honours-grid">
+    <div class="hcard"><div class="ico">🏆</div><div class="nm">ODI World Cup</div><div class="cnt">2</div><div class="lb">2011, 2023</div></div>
+    <div class="hcard"><div class="ico">⚡</div><div class="nm">T20 World Cup</div><div class="cnt">2</div><div class="lb">2007, 2024</div></div>
+    <div class="hcard"><div class="ico">🎖️</div><div class="nm">Champions Trophy</div><div class="cnt">1</div><div class="lb">2013</div></div>
+    <div class="hcard"><div class="ico">💯</div><div class="nm">Intl. Centuries</div><div class="cnt">80+</div><div class="lb">All Formats</div></div>
+    <div class="hcard"><div class="ico">👑</div><div class="nm">ICC #1 Rankings</div><div class="cnt">3</div><div class="lb">All Formats</div></div>
+    <div class="hcard"><div class="ico">🏅</div><div class="nm">Khel Ratna Award</div><div class="cnt">1</div><div class="lb">2018</div></div>
+    <div class="hcard"><div class="ico">🌟</div><div class="nm">Padma Shri</div><div class="cnt">1</div><div class="lb">2017</div></div>
+    <div class="hcard"><div class="ico">📊</div><div class="nm">ODI Run Rate</div><div class="cnt">58+</div><div class="lb">Average</div></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<div class="quote-zone">
+  <div class="quote-box">
+    <p class="q-text">"Self-belief and hard work will always earn you success."</p>
+    <div class="q-attr">— Virat Kohli</div>
+  </div>
+</div>
+
+<div class="rule"></div>
+
+<!-- RECORDS -->
+<section>
+  <div class="eye">The Record Books</div>
+  <div class="sec-h">World Records</div>
+  <div class="rec-grid">
+    <div class="rec"><div class="rec-num">80+</div><div><div class="rec-title">Most International Centuries</div><div class="rec-desc">Broke Sachin Tendulkar's record of 49 ODI centuries — the most by any batsman in history.</div></div></div>
+    <div class="rec"><div class="rec-num">50</div><div><div class="rec-title">Most ODI Centuries — World Record</div><div class="rec-desc">50+ ODI centuries — a record that may never be broken. Tendulkar's 49 stood for years before Kohli surpassed it.</div></div></div>
+    <div class="rec"><div class="rec-num">#1</div><div><div class="rec-title">Ranked #1 in All 3 Formats</div><div class="rec-desc">One of very few batsmen to simultaneously hold the #1 ICC ranking in Tests, ODIs, and T20Is.</div></div></div>
+    <div class="rec"><div class="rec-num">58+</div><div><div class="rec-title">Highest ODI Batting Average</div><div class="rec-desc">Career ODI average above 58 — the highest ever for a batsman with 100+ innings.</div></div></div>
+    <div class="rec"><div class="rec-num">27K</div><div><div class="rec-title">Most International Runs in a Decade</div><div class="rec-desc">Scored more international runs in the 2010s than any other batsman in the world — across all formats.</div></div></div>
+    <div class="rec"><div class="rec-num">∞</div><div><div class="rec-title">Greatest Chase Player of All Time</div><div class="rec-desc">Averages over 65 in successful ODI chases — earning the title "Chase Master" as the greatest finisher of run chases in history.</div></div></div>
+  </div>
+</section>
+
+<footer>
+  A tribute to the King of modern cricket — <span>Virat Kohli #18</span><br/>
+  <span style="font-size:11px;margin-top:6px;display:block;">OIBSIP · Web Development · Level 2 · Task 2</span>
+</footer>
+
+<script>
+  const items = document.querySelectorAll('.tl-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting)
+        setTimeout(() => e.target.classList.add('visible'), i * 120);
+    });
+  }, { threshold: 0.1 });
+  items.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
