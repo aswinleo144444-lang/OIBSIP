@@ -78,9 +78,7 @@ TributePage/
 ---
 
 ## 🌐 Live Demo
-
-(Add your GitHub Pages link here)
-
+https://aswinleo144444-lang.github.io/OIBSIP/Task2_TributePage/
 ---
 
 ## 👨‍💻 Author
