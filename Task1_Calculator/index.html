@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculator | OIBSIP – Level 2 Task 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --glass:       rgba(255,255,255,0.10);
+      --glass-btn:   rgba(255,255,255,0.12);
+      --glass-op:    rgba(139,92,246,0.25);
+      --glass-eq:    rgba(139,92,246,0.70);
+      --glass-fn:    rgba(255,255,255,0.08);
+      --glass-disp:  rgba(0,0,0,0.25);
+      --border:      rgba(255,255,255,0.18);
+      --border-soft: rgba(255,255,255,0.08);
+      --purple:      #8B5CF6;
+      --pink:        #EC4899;
+      --cyan:        #06B6D4;
+      --text:        #FFFFFF;
+      --muted:       rgba(255,255,255,0.45);
+      --blur:        blur(20px);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      background: #0F0720;
+    }
+
+    /* ── Animated gradient background ── */
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      pointer-events: none;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 500px; height: 500px; background: #7C3AED; top: -150px; left: -150px; animation-delay: 0s; }
+    .orb2 { width: 400px; height: 400px; background: #DB2777; bottom: -120px; right: -120px; animation-delay: -3s; }
+    .orb3 { width: 300px; height: 300px; background: #0891B2; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; }
+
+    @keyframes drift {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(30px,20px) scale(1.08); }
+    }
+    .orb3 { animation: drift3 10s ease-in-out infinite alternate; }
+    @keyframes drift3 {
+      0%   { transform: translate(-50%,-50%) scale(1); }
+      100% { transform: translate(-45%,-55%) scale(1.1); }
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-bottom: 10px;
+      backdrop-filter: var(--blur);
+    }
+    header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    header h1 span { color: var(--purple); }
+
+    /* ── Calculator shell ── */
+    .calc-wrap {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 22px;
+      width: min(350px, 100%);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      box-shadow:
+        0 8px 32px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255,255,255,0.05) inset,
+        0 1px 0 rgba(255,255,255,0.15) inset;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── Display ── */
+    .display {
+      background: var(--glass-disp);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 18px 18px 12px;
+      margin-bottom: 18px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    /* shimmer line */
+    .display::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    }
+    .expr {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 18px;
+      text-align: right;
+      word-break: break-all;
+    }
+    .result {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(30px, 8vw, 44px);
+      font-weight: 700;
+      color: var(--text);
+      text-align: right;
+      word-break: break-all;
+      transition: color 0.2s;
+      text-shadow: 0 0 20px rgba(139,92,246,0.4);
+    }
+    .display.error .result {
+      color: #F87171;
+      text-shadow: 0 0 20px rgba(248,113,113,0.4);
+    }
+
+    /* ── Button grid ── */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 18px 0;
+      cursor: pointer;
+      color: var(--text);
+      backdrop-filter: blur(8px);
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    /* shimmer on hover */
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: inherit;
+    }
+    .btn:hover::before { opacity: 1; }
+    .btn:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+    .btn:active { transform: scale(0.95) translateY(0); }
+
+    .btn-num { background: var(--glass-btn); }
+    .btn-fn  { background: var(--glass-fn); color: rgba(255,255,255,0.8); font-size: 16px; }
+    .btn-op  {
+      background: var(--glass-op);
+      border-color: rgba(139,92,246,0.3);
+      color: #C4B5FD;
+      font-size: 20px;
+    }
+    .btn-op:hover { border-color: var(--purple); box-shadow: 0 4px 20px rgba(139,92,246,0.3); }
+    .btn-eq  {
+      background: var(--glass-eq);
+      border-color: rgba(139,92,246,0.5);
+      box-shadow: 0 4px 20px rgba(139,92,246,0.3);
+      font-size: 22px;
+    }
+    .btn-eq:hover { box-shadow: 0 6px 28px rgba(139,92,246,0.5); background: rgba(139,92,246,0.85); }
+    .btn-zero { grid-column: span 2; text-align: left; padding-left: 26px; }
+
+    /* ── History ── */
+    .hist-wrap { margin-top: 14px; }
+    .hist-toggle {
+      width: 100%;
+      background: var(--glass-fn);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 9px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .hist-toggle:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    .hist-list {
+      display: none;
+      margin-top: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--purple) transparent;
+    }
+    .hist-list.open { display: block; }
+    .hist-item {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 7px 4px;
+      border-bottom: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: color 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .hist-item:hover { color: var(--text); }
+    .hist-item .hval {
+      color: #C4B5FD;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .hist-empty {
+      font-size: 12px; color: var(--muted);
+      text-align: center; padding: 12px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 1px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    footer span { color: var(--purple); }
+
+    /* keyboard flash */
+    .btn.flash { filter: brightness(1.8); }
+  </style>
+</head>
+<body>
+
+<!-- Background orbs -->
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<header>
+  <div class="badge">OIBSIP · Web Dev · Level 2 · Task 1</div>
+  <h1>Calc<span>Glass</span></h1>
+</header>
+
+<div class="calc-wrap">
+
+  <div class="display" id="display">
+    <div class="expr" id="expr"></div>
+    <div class="result" id="result">0</div>
+  </div>
+
+  <div class="btn-grid">
+    <button class="btn btn-fn" data-action="clear">AC</button>
+    <button class="btn btn-fn" data-action="sign">+/−</button>
+    <button class="btn btn-fn" data-action="percent">%</button>
+    <button class="btn btn-op" data-action="op" data-val="÷">÷</button>
+
+    <button class="btn btn-num" data-action="digit" data-val="7">7</button>
+    <button class="btn btn-num" data-action="digit" data-val="8">8</button>
+    <button class="btn btn-num" data-action="digit" data-val="9">9</button>
+    <button class="btn btn-op"  data-action="op"    data-val="×">×</button>
+
+    <button class="btn btn-num" data-action="digit" data-val="4">4</button>
+    <button class="btn btn-num" data-action="digit" data-val="5">5</button>
+    <button class="btn btn-num" data-action="digit" data-val="6">6</button>
+    <button class="btn btn-op"  data-action="op"    data-val="−">−</button>
+
+    <button class="btn btn-num" data-action="digit" data-val="1">1</button>
+    <button class="btn btn-num" data-action="digit" data-val="2">2</button>
+    <button class="btn btn-num" data-action="digit" data-val="3">3</button>
+    <button class="btn btn-op"  data-action="op"    data-val="+">+</button>
+
+    <button class="btn btn-num btn-zero" data-action="digit" data-val="0">0</button>
+    <button class="btn btn-num" data-action="dot">.</button>
+    <button class="btn btn-eq"  data-action="equals">=</button>
+  </div>
+
+  <div class="hist-wrap">
+    <button class="hist-toggle" id="histToggle">▸ HISTORY</button>
+    <div class="hist-list" id="histList">
+      <div class="hist-empty" id="histEmpty">No calculations yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Made with ♥ for <span>Oasis Infobyte</span> Internship</footer>
+
+<script>
+  let cur='0', prev='', op=null, reset=false, hist=[];
+  const display=document.getElementById('display');
+  const resultEl=document.getElementById('result');
+  const exprEl=document.getElementById('expr');
+  const histList=document.getElementById('histList');
+  const histEmpty=document.getElementById('histEmpty');
+  const histToggle=document.getElementById('histToggle');
+
+  function render(v,e='',err=false){
+    resultEl.textContent=v;
+    exprEl.textContent=e;
+    display.classList.toggle('error',err);
+  }
+  function digit(d){
+    if(reset){cur=d;reset=false;}
+    else cur=cur==='0'?d:cur+d;
+    if(cur.length>14)cur=cur.slice(0,14);
+    render(cur,exprEl.textContent);
+  }
+  function dot(){
+    if(reset){cur='0.';reset=false;}
+    else if(!cur.includes('.'))cur+='.';
+    render(cur,exprEl.textContent);
+  }
+  function setOp(o){
+    if(op&&!reset)calc(false);
+    prev=cur; op=o; reset=true;
+    render(cur,`${prev} ${o}`);
+  }
+  function calc(fin=true){
+    if(!op||!prev)return;
+    const a=parseFloat(prev),b=parseFloat(cur);
+    let res;
+    switch(op){
+      case '+':res=a+b;break;
+      case '−':res=a-b;break;
+      case '×':res=a*b;break;
+      case '÷':
+        if(b===0){render('Error',`${a} ÷ 0`,true);op=null;return;}
+        res=a/b;break;
+    }
+    const e=`${prev} ${op} ${cur} =`;
+    res=parseFloat(res.toPrecision(12));
+    if(fin){addHist(e,String(res));op=null;prev='';reset=true;}
+    cur=String(res);
+    render(cur,fin?e:`${prev} ${op}`);
+  }
+  function addHist(e,r){
+    hist.unshift({e,r});
+    if(hist.length>20)hist.pop();
+    renderHist();
+  }
+  function renderHist(){
+    histEmpty.style.display=hist.length?'none':'block';
+    histList.querySelectorAll('.hist-item').forEach(i=>i.remove());
+    hist.forEach(h=>{
+      const d=document.createElement('div');
+      d.className='hist-item';
+      d.innerHTML=`<span>${h.e}</span><span class="hval">${h.r}</span>`;
+      d.onclick=()=>{cur=h.r;reset=true;render(h.r,h.e);};
+      histList.appendChild(d);
+    });
+  }
+  histToggle.onclick=function(){
+    const o=histList.classList.toggle('open');
+    this.textContent=(o?'▾':'▸')+' HISTORY';
+  };
+
+  // Button clicks
+  document.querySelector('.btn-grid').addEventListener('click',e=>{
+    const b=e.target.closest('.btn'); if(!b)return;
+    const a=b.dataset.action,v=b.dataset.val;
+    if(a==='digit')digit(v);
+    else if(a==='dot')dot();
+    else if(a==='op')setOp(v);
+    else if(a==='equals')calc(true);
+    else if(a==='clear'){cur='0';prev='';op=null;reset=false;render('0','');display.classList.remove('error');}
+    else if(a==='sign'){cur=String(parseFloat(cur)*-1);render(cur,exprEl.textContent);}
+    else if(a==='percent'){cur=String(parseFloat(cur)/100);render(cur,exprEl.textContent);}
+  });
+
+  // Keyboard support
+  const km={'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
+    '.':'.','+':`+`,'-':'−','*':'×','/':'÷','Enter':'=','Escape':'AC','%':'%','Backspace':'⌫'};
+  document.addEventListener('keydown',e=>{
+    const m=km[e.key]; if(!m)return; e.preventDefault();
+    // flash matching button
+    document.querySelectorAll('.btn').forEach(b=>{
+      if(b.textContent.trim()===m||b.dataset.val===m||(m==='='&&b.dataset.action==='equals')||(m==='AC'&&b.dataset.action==='clear')){
+        b.classList.add('flash');
+        setTimeout(()=>b.classList.remove('flash'),120);
+      }
+    });
+    if('0123456789'.includes(m))digit(m);
+    else if(m==='.')dot();
+    else if(['+','−','×','÷'].includes(m))setOp(m);
+    else if(m==='=')calc(true);
+    else if(m==='AC'){cur='0';prev='';op=null;reset=false;render('0','');display.classList.remove('error');}
+    else if(m==='%'){cur=String(parseFloat(cur)/100);render(cur,exprEl.textContent);}
+    else if(m==='⌫'){
+      if(cur.length>1)cur=cur.slice(0,-1); else cur='0';
+      render(cur,exprEl.textContent);
+    }
+  });
+
+  render('0','');
+</script>
+</body>
+</html>
