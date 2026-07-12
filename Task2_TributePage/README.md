@@ -85,7 +85,7 @@ TributePage/
 
 ## 👨‍💻 Author
 
-**Your Name**
+Aswin Leo
 
 Web Development Intern  
 OIBSIP - Level 2
