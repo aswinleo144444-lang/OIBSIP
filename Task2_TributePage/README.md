@@ -77,8 +77,7 @@ TributePage/
 
 ---
 
-## 🌐 Live Demo
-https://aswinleo144444-lang.github.io/OIBSIP/Task2_TributePage/
+## 🌐 Live Demo: https://aswinleo144444-lang.github.io/OIBSIP/Task2_TributePage/
 ---
 
 ## 👨‍💻 Author
